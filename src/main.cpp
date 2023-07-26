@@ -18,7 +18,8 @@
 // 28BYJ48 pin 4 | nodemcu D4	== 2
 int8_t motorPins[] = {16, 5, 4, 2};
 int feedAmount = 100;
-StepperMotor feederController(motorPins, FEED_SPEED, STEPS_BACK, STEPS_FORWARD, feedAmount);
+
+StepperMotor stepperMotor(motorPins, FEED_SPEED, STEPS_BACK, STEPS_FORWARD, feedAmount);
 HttpServer httpServer;
 
 void setup() {
@@ -33,12 +34,12 @@ void setup() {
     EEPROM.commit(); // EEPROM.commit() uses only for esp8266 or esp32
   }
 
-  httpServer.begin(ssid, password);
+  httpServer.begin(ssid, password, stepperMotor);
 }
 
 void loop(){
-  // httpServer.handleRequest();
+  httpServer.handleRequest();
 
   if(digitalRead(BUTTON_PIN) == LOW)//TODO: create function for check is button was clicked or holded
-    feederController.feed();
+    stepperMotor.feed();
 }
