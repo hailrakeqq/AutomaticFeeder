@@ -1,9 +1,12 @@
 #ifndef HTTPSERVER_H
 #define HTTPSERVER_H
 
+#include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
+#include <EEPROM.h>
 #include "StepperMotor.h"
+
 class HttpServer{
 public:
     HttpServer();

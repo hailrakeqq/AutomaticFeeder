@@ -30,6 +30,7 @@ void StepperMotor::oneRev() {
 }
 
 void StepperMotor::feed() {
+    EEPROM.get(1, feedAmount);
     for (int i = 0; i < feedAmount; i++)
         oneRev();
     disableMotor();

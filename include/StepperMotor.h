@@ -2,6 +2,7 @@
 #define STEPPER_MOTOR_H
 
 #include <Arduino.h>
+#include <EEPROM.h>
 
 class StepperMotor {
 private:

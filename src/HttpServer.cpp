@@ -20,7 +20,7 @@ void HttpServer::begin(const char* ssid, const char* password, StepperMotor step
         this->handleFeed(stepperMotor);
     });
 
-     server.on("/change_feedamount", [this](){
+    server.on("/change_feedamount", HTTP_POST, [this](){
         this->handleChangeFeedAmount();
     });
 
@@ -38,10 +38,28 @@ void HttpServer::handleFeed(StepperMotor stepperMotor){
 }
 
 void HttpServer::handleChangeFeedAmount(){
-    Serial.print("test");
+      if (server.method() == HTTP_POST) {
+        if (server.hasArg("plain")) {
+            int value = server.arg("plain").toInt();
+            
+            EEPROM.put(1, value);
+            EEPROM.commit();
+                  
+            server.send(200, "text/plain", "Feed Amount was successfully updated");
+        } else {
+            server.send(400, "text/plain", "Bad Request - Missing JSON data");
+        }
+    } else {
+        server.send(405, "text/plain", "Method Not Allowed");
+    }
 }
+
 void HttpServer::handleGetFeedAmount(){
-    Serial.print("test");
+    int feedAmount;
+
+    EEPROM.get(1, feedAmount);
+    String result = String(feedAmount);
+    server.send(200, "application/json", result);
 }
 
 void HttpServer::handleRequest(){
