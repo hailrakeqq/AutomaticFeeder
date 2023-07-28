@@ -10,9 +10,9 @@
 class HttpServer{
 public:
     HttpServer();
-    void begin(const char* ssid, const char* password, StepperMotor stepperMotor);
+    void begin(const char* ssid, const char* password, StepperMotor* stepperMotor);
     void handleRequest();
-    void handleFeed(StepperMotor stepperMotor);
+    void handleFeed(StepperMotor* stepperMotor);
     void handleChangeFeedAmount();
     void handleGetFeedAmount();
 

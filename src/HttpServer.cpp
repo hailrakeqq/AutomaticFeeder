@@ -3,7 +3,7 @@
 
 HttpServer::HttpServer(): server(80){}
 
-void HttpServer::begin(const char* ssid, const char* password, StepperMotor stepperMotor){
+void HttpServer::begin(const char* ssid, const char* password, StepperMotor *stepperMotor){
     WiFi.begin(ssid, password);
     while(WiFi.status() != WL_CONNECTED){
         delay(1000);
@@ -32,9 +32,9 @@ void HttpServer::begin(const char* ssid, const char* password, StepperMotor step
     Serial.println("HTTP server has been started");
 }
 
-void HttpServer::handleFeed(StepperMotor stepperMotor){
-    stepperMotor.feed();
-    server.send(200, "text/plain", "Feed working!!!");
+void HttpServer::handleFeed(StepperMotor* stepperMotor){
+    stepperMotor->feed();
+    server.send(200, "text/plain", "feed working.");
 }
 
 void HttpServer::handleChangeFeedAmount(){
@@ -59,7 +59,7 @@ void HttpServer::handleGetFeedAmount(){
 
     EEPROM.get(1, feedAmount);
     String result = String(feedAmount);
-    server.send(200, "application/json", result);
+    server.send(200, "text/plain", result);
 }
 
 void HttpServer::handleRequest(){

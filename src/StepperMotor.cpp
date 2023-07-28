@@ -12,6 +12,7 @@ StepperMotor::StepperMotor(int8_t motorPins[], int feedSpeed, int stepsBack, int
 void StepperMotor::disableMotor() {
     for (byte i = 0; i < NUMBER_OF_PHASE; i++)
         digitalWrite(motorPins[i], LOW);
+    delay(10);
 }
 
 void StepperMotor::runMotor(int8_t dir) {
@@ -20,6 +21,7 @@ void StepperMotor::runMotor(int8_t dir) {
         digitalWrite(motorPins[i], bitRead(steps[step & 0b11], i));
     delayMicroseconds(feedSpeed);
     step += dir;
+    delay(10);
 }
 
 void StepperMotor::oneRev() {
@@ -27,6 +29,7 @@ void StepperMotor::oneRev() {
         runMotor(-1);
     for (int i = 0; i < stepsForward; i++)
         runMotor(1);
+    delay(10);
 }
 
 void StepperMotor::feed() {
@@ -34,4 +37,5 @@ void StepperMotor::feed() {
     for (int i = 0; i < feedAmount; i++)
         oneRev();
     disableMotor();
+    delay(10);
 }

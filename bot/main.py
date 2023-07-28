@@ -1,4 +1,5 @@
 import os
+import requests
 from dotenv import load_dotenv
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
@@ -13,15 +14,20 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def ask_for_number(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     global isSetAmount
-    isSetAmount = True
-    await update.message.reply_text("Please enter a number:")
+    isSetAmount = True       
+    response = requests.get("http://192.168.0.14:80/get_feedamount")
+    response.raise_for_status()  # Raise an exception for 4xx and 5xx status codes
+    await update.message.reply_text(f"Current Amount Feed: {response.text}\nPlease enter a amount feed:")
 
 async def handle_number(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     global isSetAmount
     if isSetAmount:
         try:
             number = int(update.message.text)
-            await update.message.reply_text(f"You entered the number: {number}")
+            data = str(number)
+            response = requests.post("http://192.168.0.14:80/change_feedamount", data=data)
+            result = response.text
+            await update.message.reply_text(result)
         except ValueError:
             await update.message.reply_text("Invalid input. Please enter a valid number.")
         finally: 
@@ -34,7 +40,13 @@ async def language(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text('here you can change language... coming soon', reply_markup=get_keyboard())
 
 async def feed(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text('here you can feed your pet... coming soon', reply_markup=get_keyboard())
+    try:
+        response = requests.get("http://192.168.0.14:80/feed")
+        response.raise_for_status()  # Raise an exception for 4xx and 5xx status codes
+        return response.text
+    except requests.exceptions.RequestException as e:
+        await update.message.reply_text(f"An error occurred: {e}", reply_markup=get_keyboard())
+        return None
 
 
 def get_keyboard():
